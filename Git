@@ -1,0 +1,23 @@
+建立文件夹空白处右键 right click under the folder -> git bash here
+git clone https//.....git   //clone to local
+git branch <BranchName> //create a breanch
+git branch -v //display all branches
+git checkout <BranchName>  // switch branches
+
+
+**add a file**
+git add <filename>/.   //add files
+git commit -m '<comment>' //without '-m' will go to vim mode
+git push origin //在自己的branch上
+  git push -u origin
+  git push -u origin master //没有branch的话 用master
+  git push origin master -f
+
+
+**update a file**
+git add -A
+git commit -a -m "update"
+git push origin //在自己的branch上
+  git push -u origin
+  git push -u origin master //没有branch的话 用master
+  git push origin master -f
