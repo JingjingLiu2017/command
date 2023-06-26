@@ -118,3 +118,17 @@ describe('CardholderDashboardComponent', () => {
     expect(component.displayName).toEqual('Test Name');
   });
 });
+
+   this.newsService.getNews().subscribe(
+      (response: News) => {
+        const messageCount = response.listGroupSectionRows.length;
+        if (messageCount > 0) {
+          this.newsDisplayData.description = 'cardholder.news.viewNews';
+        } else {
+          this.newsDisplayData.description = 'cardholder.news.noNews';
+        }
+      },
+      error => {
+        console.error('Failed to fetch news data from the service:', error);
+      }
+    );
