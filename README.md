@@ -54,3 +54,29 @@ NullInjectorError: R3InjectorError(DynamicTestModule)[WindowRef -> WindowRef]:
 CardholderDashboardComponent > should return expected display name
 NullInjectorError: R3InjectorError(DynamicTestModule)[WindowRef -> WindowRef]: 
   NullInjectorError: No provider for WindowRef!
+import { Component, Injector, Input, OnInit } from '@angular/core';
+import { UserDetailsService } from '@features/services/user-details/user-details.service';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-ch-dashboard',
+  templateUrl: './cardholder-dashboard.component.html',
+  styleUrls: ['./cardholder-dashboard.component.scss']
+})
+export class CardholderDashboardComponent implements OnInit {
+  isIccpUser = true;
+  displayName: string;
+  private readonly userDetailsService: UserDetailsService;
+  @Input() guid: string;
+
+  constructor(private readonly injector: Injector) {
+    this.userDetailsService = injector.get(UserDetailsService);
+  }
+  ngOnInit(): void {
+    this.userDetailsService
+      .getUserDetailsByEntityGuid(this.guid)
+      .subscribe(dashboardRes => {
+        this.displayName = dashboardRes.displayName;
+      });
+  }
+}
