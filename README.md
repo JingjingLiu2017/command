@@ -80,3 +80,41 @@ export class CardholderDashboardComponent implements OnInit {
       });
   }
 }
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CardholderDashboardComponent } from '@features/cardholder-dashboard/cardholder-dashboard.component';
+import { UserDetailsService } from '@features/services/user-details/user-details.service';
+import { of } from 'rxjs';
+
+describe('CardholderDashboardComponent', () => {
+  let component: CardholderDashboardComponent;
+  let fixture: ComponentFixture<CardholderDashboardComponent>;
+  let mockUserDetailsService: jasmine.SpyObj<UserDetailsService>;
+
+  beforeEach(async () => {
+    mockUserDetailsService = jasmine.createSpyObj('UserDetailsService', ['getUserDetailsByEntityGuid']);
+    mockUserDetailsService.getUserDetailsByEntityGuid.and.returnValue(of({ displayName: 'Test Name' }));
+
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      declarations: [CardholderDashboardComponent],
+      providers: [
+        { provide: UserDetailsService, useValue: mockUserDetailsService }
+      ]
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(CardholderDashboardComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should set the display name', () => {
+    expect(component.displayName).toEqual('Test Name');
+  });
+});
