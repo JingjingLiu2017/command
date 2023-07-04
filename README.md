@@ -76,4 +76,6 @@ describe('NewsService', () => {
 
     const request = httpMock.expectOne('/sdng/portalservice/retrieveNews.json');
     expect(request.request.method).toBe('GET');
-    request.error(new ErrorEvent('500 Internal Server Error'), { status: 500, statusText: 'Internal Server Error
+    request.error(new ErrorEvent('Internal Server Error'), { status: 500, statusText: 'Internal Server Error' });
+  });
+});
