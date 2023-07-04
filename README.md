@@ -1,43 +1,24 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { NewsService } from './news.service';
-import { News } from '../models/news';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, finalize } from 'rxjs';
+import { News } from './news.model';
+import { ShimmerService } from '@shared/services/shimmer/shimmer.service';
 
-describe('NewsService', () => {
-  let newsService: NewsService;
-  let httpMock: HttpTestingController;
+@Injectable({
+  providedIn: 'root'
+})
+export class NewsService {
+  constructor(private readonly http: HttpClient, private shimmerService: ShimmerService) {}
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [NewsService]
-    });
+  private readonly url = '/sdng/portalservice/retrieveNews.json';
 
-    newsService = TestBed.inject(NewsService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
+  getNews(): Observable<News> {
+    this.shimmerService.startLoading();
 
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(newsService).toBeTruthy();
-  });
-
-  it('should fetch news data', () => {
-    const dummyNews: News[] = [
-      { id: 1, title: 'News 1', content: 'This is news 1' },
-      { id: 2, title: 'News 2', content: 'This is news 2' }
-    ];
-
-    newsService.fetchNews().subscribe((news: News[]) => {
-      expect(news.length).toBe(2);
-      expect(news).toEqual(dummyNews);
-    });
-
-    const request = httpMock.expectOne('your-api-url'); // Replace 'your-api-url' with the actual URL for fetching news data
-    expect(request.request.method).toBe('GET');
-    request.flush(dummyNews);
-  });
-});
+    return this.http.get<News>(this.url).pipe(
+      finalize(() =>{
+        this.shimmerService.stopLoading();
+      })
+    );
+  }
+}
