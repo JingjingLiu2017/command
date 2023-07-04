@@ -1,70 +1,20 @@
-import { TestBed, inject } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { NewsService } from './news.service';
-import { News } from './news.model';
-import { ShimmerService } from '@shared/services/shimmer/shimmer.service';
-import { Observable } from 'rxjs';
-
-describe('NewsService', () => {
-  let newsService: NewsService;
-  let httpMock: HttpTestingController;
-  let shimmerServiceSpy: jasmine.SpyObj<ShimmerService>;
-
-  beforeEach(() => {
-    const shimmerSpy = jasmine.createSpyObj('ShimmerService', ['startLoading', 'stopLoading']);
-
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        NewsService,
-        { provide: ShimmerService, useValue: shimmerSpy }
-      ]
-    });
-
-    newsService = TestBed.inject(NewsService);
-    httpMock = TestBed.inject(HttpTestingController);
-    shimmerServiceSpy = TestBed.inject(ShimmerService) as jasmine.SpyObj<ShimmerService>;
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(newsService).toBeTruthy();
-  });
-
-  it('should start and stop shimmer loading while fetching news', () => {
-    const dummyNews: News = { id: 1, title: 'News Title', content: 'News Content' };
-
-    newsService.getNews().subscribe((news: News) => {
-      expect(news).toEqual(dummyNews);
-      expect(shimmerServiceSpy.startLoading).toHaveBeenCalled();
-      expect(shimmerServiceSpy.stopLoading).toHaveBeenCalled();
-    });
-
-    const request = httpMock.expectOne('/sdng/portalservice/retrieveNews.json');
-    expect(request.request.method).toBe('GET');
-    request.flush(dummyNews);
-  });
-
-  it('should handle errors while fetching news', () => {
-    const errorMessage = 'Error fetching news.';
-    const errorResponse = { status: 500, statusText: 'Internal Server Error' };
-
-    newsService.getNews().subscribe(
-      (news: News) => {
-        fail('Expected error to be thrown.');
-      },
-      (error: any) => {
-        expect(error).toEqual(errorMessage);
-        expect(shimmerServiceSpy.startLoading).toHaveBeenCalled();
-        expect(shimmerServiceSpy.stopLoading).toHaveBeenCalled();
-      }
-    );
-
-    const request = httpMock.expectOne('/sdng/portalservice/retrieveNews.json');
-    expect(request.request.method).toBe('GET');
-    request.flush(errorMessage, errorResponse);
-  });
-});
+NewsService > should start and stop shimmer loading while fetching news
+Expected spy ShimmerService.stopLoading to have been called.
+Error: Expected spy ShimmerService.stopLoading to have been called.
+    at <Jasmine>
+    at Object.next (http://localhost:9876/_karma_webpack_/webpack:/src/app/features/services/news/news.service.spec.ts:83:45)
+    at ConsumerObserver.next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:91:1)
+    at SafeSubscriber._next (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:60:1)
+NewsService > should handle errors while fetching news
+Expected HttpErrorResponse({ headers: HttpHeaders({ normalizedNames: Map(  ), lazyUpdate: null, headers: Map(  ) }), status: 500, statusText: 'Internal Server Error', url: '/sdng/portalservice/retrieveNews.json', ok: false, name: 'HttpErrorResponse', message: 'Http failure response for /sdng/portalservice/retrieveNews.json: 500 Internal Server Error', error: 'Error fetching news.' }) to equal 'Error fetching news.'.
+Error: Expected HttpErrorResponse({ headers: HttpHeaders({ normalizedNames: Map(  ), lazyUpdate: null, headers: Map(  ) }), status: 500, statusText: 'Internal Server Error', url: '/sdng/portalservice/retrieveNews.json', ok: false, name: 'HttpErrorResponse', message: 'Http failure response for /sdng/portalservice/retrieveNews.json: 500 Internal Server Error', error: 'Error fetching news.' }) to equal 'Error fetching news.'.
+    at <Jasmine>
+    at Object.error (http://localhost:9876/_karma_webpack_/webpack:/src/app/features/services/news/news.service.spec.ts:100:23)
+    at ConsumerObserver.error (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:102:1)
+    at SafeSubscriber._error (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:64:1)
+Expected spy ShimmerService.stopLoading to have been called.
+Error: Expected spy ShimmerService.stopLoading to have been called.
+    at <Jasmine>
+    at Object.error (http://localhost:9876/_karma_webpack_/webpack:/src/app/features/services/news/news.service.spec.ts:102:47)
+    at ConsumerObserver.error (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:102:1)
+    at SafeSubscriber._error (http://localhost:9876/_karma_webpack_/webpack:/node_modules/rxjs/dist/esm/internal/Subscriber.js:64:1
