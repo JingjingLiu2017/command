@@ -1,55 +1,66 @@
-import { TestBed, inject } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { NewsService } from './news.service';
-import { News } from './news.model';
+import { Component, Input, OnInit } from '@angular/core';
+import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
+import { Dashboard } from '@features/constants/dashboard-constants';
+import { NewsService } from '@features/services/news/news.service';
+import { WindowRef } from '@shared/services/windowref/windowref.service';
+import { News } from '@features/services/news/news.model';
 import { ShimmerService } from '@shared/services/shimmer/shimmer.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
-describe('NewsService', () => {
-  let newsService: NewsService;
-  let httpMock: HttpTestingController;
-  let shimmerServiceSpy: jasmine.SpyObj<ShimmerService>;
+@Component({
+  selector: 'app-news',
+  templateUrl: './news.component.html',
+  styleUrls: ['./news.component.scss']
+})
+export class NewsComponent implements OnInit {
+  newsDisplayData$ = new BehaviorSubject<QuickLinkCard>(null);
+  @Input() isIccpUser = false;
+  shimmer: Boolean = false;
 
-  beforeEach(() => {
-    const shimmerSpy = jasmine.createSpyObj('ShimmerService', ['startLoading', 'stopLoading']);
+  constructor(
+    private readonly newsService: NewsService,
+    private readonly winRef: WindowRef,
+    private shimmerService: ShimmerService
+  ) {}
+  isLoading$: Observable<boolean>;
 
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        NewsService,
-        { provide: ShimmerService, useValue: shimmerSpy }
-      ]
+  ngOnInit(): void {
+    this.fetchNewsData();
+    this.isLoading$ = this.shimmerService.isLoading$();
+  }
+
+  /**
+   * Subscribes to the news service and gets the news response
+   */
+  fetchNewsData() {
+    this.newsService.getNews().subscribe({
+      next: (response: News) => {
+        const updatedDescription =
+          response.listGroupSectionRows && response.listGroupSectionRows.length > 0
+            ? 'cardholder.news.viewNews'
+            : 'cardholder.news.noNews';
+        this.newsDisplayData$.next({
+          iconUrl: Dashboard.NEWS_ICON_URL,
+          heading: 'cardholder.news.heading',
+          description: updatedDescription,
+          nextDisplayLink: Dashboard.NEWS_SDNG_PAGE_URL,
+          altText: 'cardholder.news.altText',
+          customClass: 'news-widget'
+        });
+      },
+      error: error => {
+        console.error('Failed to fetch news data from the service:', error);
+      }
     });
+  }
 
-    newsService = TestBed.inject(NewsService);
-    httpMock = TestBed.inject(HttpTestingController);
-    shimmerServiceSpy = TestBed.inject(ShimmerService) as jasmine.SpyObj<ShimmerService>;
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(newsService).toBeTruthy();
-  });
-
-  it('should start and stop shimmer loading while fetching news', async () => {
-    const dummyNews: News = { id: 1, title: 'News Title', content: 'News Content' };
-
-    shimmerServiceSpy.startLoading.and.callThrough();
-    shimmerServiceSpy.stopLoading.and.callThrough();
-
-    const newsPromise = newsService.getNews().toPromise();
-
-    expect(shimmerServiceSpy.startLoading).toHaveBeenCalled();
-
-    const request = httpMock.expectOne('/sdng/portalservice/retrieveNews.json');
-    expect(request.request.method).toBe('GET');
-    request.flush(dummyNews);
-
-    const news = await newsPromise;
-    expect(news).toEqual(dummyNews);
-    expect(shimmerServiceSpy.stopLoading).toHaveBeenCalled();
-  });
-});
+  /**
+   * Redirects to the news legacy page when
+   * arrow button is clicked from news quick link
+   * @param redirectUrl
+   */
+  navigateToNewsPage(redirectUrl: string): void {
+    this.winRef.nativeWindow.location.href = redirectUrl;
+  }
+}
