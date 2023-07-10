@@ -1,3 +1,4 @@
+here it the news.component.ts: 
 import { Component, Input, OnInit } from '@angular/core';
 import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
 import { Dashboard } from '@features/constants/dashboard-constants';
@@ -5,8 +6,7 @@ import { NewsService } from '@features/services/news/news.service';
 import { WindowRef } from '@shared/services/windowref/windowref.service';
 import { News } from '@features/services/news/news.model';
 import { ShimmerService } from '@shared/services/shimmer/shimmer.service';
-import { Observable } from 'rxjs';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-news',
@@ -16,12 +16,13 @@ import { BehaviorSubject } from 'rxjs';
 export class NewsComponent implements OnInit {
   newsDisplayData$ = new BehaviorSubject<QuickLinkCard>(null);
   @Input() isIccpUser = false;
-  shimmer: Boolean = false;
+  shimmer = false;
+  loadFailure = true;//to test
 
   constructor(
     private readonly newsService: NewsService,
     private readonly winRef: WindowRef,
-    private shimmerService: ShimmerService
+    private readonly shimmerService: ShimmerService
   ) {}
   isLoading$: Observable<boolean>;
 
@@ -51,6 +52,7 @@ export class NewsComponent implements OnInit {
       },
       error: error => {
         console.error('Failed to fetch news data from the service:', error);
+        this.loadFailure = true;
       }
     });
   }
@@ -64,3 +66,5 @@ export class NewsComponent implements OnInit {
     this.winRef.nativeWindow.location.href = redirectUrl;
   }
 }
+
+ 
