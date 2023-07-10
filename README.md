@@ -67,4 +67,39 @@ export class NewsComponent implements OnInit {
   }
 }
 
- 
+ <div
+  [ngClass]="{'quickLinksCard__iccp-container': isIccpUser && !shimmerLoading, 'quickLinksCard__shimmer-effect': shimmerLoading }"
+  (click)="navigateToUrl(quickLinkCardDisplay?.nextDisplayLink)"
+>
+<div class="quickLinksCard__text" *ngIf="!loadFailure">
+  <div class="quickLinksCard__iconBackground" *ngIf="quickLinkCardDisplay?.iconUrl">
+    <img [alt]="quickLinkCardDisplay?.altText | transloco" [src]="quickLinkCardDisplay?.iconUrl" [ngClass]="isIccpUser ? 'quickLinksCard__iccp-icon' : 'quickLinksCard__icon'" />
+  </div>
+    <div [ngClass]="isIccpUser ? 'quickLinksCard__iccp-text-container' : 'quickLinksCard__text-container'">
+     
+  
+          <p class="quickLinksCard__heading">{{ quickLinkCardDisplay?.heading | transloco }}</p>
+          <p [ngClass]="isIccpUser ? 'quickLinksCard__iccp-description' : 'quickLinksCard__description'">
+            {{ quickLinkCardDisplay?.description | transloco }}
+          </p>
+    </div>
+</div>
+
+<div class="quickLinksCard__load-failure-icon-background" *ngIf="loadFailure">
+  <img class="quickLinksCard__load-failure-icon" src="assets/images/alert-triangles.svg" alt="alert triangles Icon">
+  <p class="quickLinksCard__heading">{{ quickLinkCardDisplay?.heading | transloco }}</p>
+  <p class="quickLinksCard__iccp-description">{{ quickLinkCardDisplay?.heading | transloco }}</p> 
+<!-- need change -->
+  <button class="quickLinksCard__refresh-button" (click)="refresh()">
+    <img class="quickLinksCard__refresh-button-icon" src="assets/images/refresh-icon.svg" alt="Refresh Icon">
+    <span class="error-page_button-body">{{ 'cardholder.errorPage.button' | transloco}}</span>
+</button> 
+</div>  
+
+   <button *ngIf="!shimmerLoading" type="button" class="quickLinksCard__arrow-button" [attr.aria-label] ="quickLinkCardDisplay?.heading | transloco">
+    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 12.5L10 8.5L6 4.5" stroke="#141413" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+  </button>
+</div>
+
