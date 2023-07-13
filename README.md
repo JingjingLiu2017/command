@@ -476,3 +476,6 @@ export class QuickLinksCardComponent {
   }
 }
 
+Error: src/app/shared/components/quick-links-card/quick-links-card.component.spec.ts:31:42 - error TS1003: Identifier expected.
+
+31     spyOn(component.emitNextDisplayLink. 'emit');
