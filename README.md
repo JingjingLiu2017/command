@@ -441,4 +441,38 @@ export class ResourceCenterComponent implements OnInit {
     this.router.navigate([routeName]);
   }
 }
+quick-links-card.components.ts is shared:
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { QuickLinkCard } from './quick-link-card.model';
+import { WindowRef } from '@shared/services/windowref/windowref.service';
+
+@Component({
+  selector: 'app-quick-links-card',
+  templateUrl: './quick-links-card.component.html',
+  styleUrls: ['./quick-links-card.component.scss']
+})
+export class QuickLinksCardComponent {
+  constructor(private readonly winRef: WindowRef) {}
+
+  @Input() quickLinkCardDisplay: QuickLinkCard;
+  @Input() isIccpUser = false;
+  @Input() shimmerLoading: boolean;
+  @Input() loadFailure: boolean;
+  @Output() emitNextDisplayLink: EventEmitter<string> = new EventEmitter();
+
+  /**
+   * When user clicks quick links entire card
+   * it should take user to appropriate widget section or any page links
+   * @param this.quickLinkCardDisplay.nextDisplayLink that should take user
+   * to mentioned page
+   */
+  navigateToUrl(redirectUrl: string): void {
+    this.emitNextDisplayLink.emit(redirectUrl);
+  }
+
+
+  refresh() {
+    this.winRef.nativeWindow.location.reload();
+  }
+}
 
