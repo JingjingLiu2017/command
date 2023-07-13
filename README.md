@@ -404,4 +404,41 @@ export class NewsComponent implements OnInit {
     height: 16px;
   }
 }
+resource-center.components.ts:
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Dashboard } from '@features/constants/dashboard-constants';
+import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
+import { BehaviorSubject } from 'rxjs';
+
+@Component({
+  selector: 'app-resource-center',
+  templateUrl: './resource-center.component.html',
+  styleUrls: ['./resource-center.component.scss']
+})
+export class ResourceCenterComponent implements OnInit {
+  resourceCenterDisplayData$ = new BehaviorSubject<QuickLinkCard>(null);
+  @Input() isIccpUser = false;
+  constructor(private readonly router: Router) {}
+  loadFailure$ = new BehaviorSubject<boolean>(true);//to test
+  
+  ngOnInit(): void {
+    this.resourceCenterDisplayData$.next({
+      iconUrl: Dashboard.RESOURCE_CENTER_ICON_URL,
+      heading: 'cardholder.resourceCenter.heading',
+      description: 'cardholder.resourceCenter.description',
+      nextDisplayLink: Dashboard.RESOURCE_CENTER_PAGE_ROUTE,
+      altText: 'cardholder.resourceCenter.altText',
+      customClass: 'resourceCenter-widget'
+    });
+  }
+  /**
+   * Navigates to the resource center page when arrow button is clicked from resource
+   * center quick link
+   * @param routeName
+   */
+  navigateToResourceCenterPage(routeName: string): void {
+    this.router.navigate([routeName]);
+  }
+}
 
