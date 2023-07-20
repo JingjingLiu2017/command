@@ -1,78 +1,3 @@
-here it the news.component.ts: 
-import { Component, Input, OnInit } from '@angular/core';
-import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
-import { Dashboard } from '@features/constants/dashboard-constants';
-import { NewsService } from '@features/services/news/news.service';
-import { WindowRef } from '@shared/services/windowref/windowref.service';
-import { News } from '@features/services/news/news.model';
-import { ShimmerService } from '@shared/services/shimmer/shimmer.service';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { CobrandingService } from '@shared/services/cobranding/cobranding.service';
-
-@Component({
-  selector: 'app-news',
-  templateUrl: './news.component.html',
-  styleUrls: ['./news.component.scss']
-})
-export class NewsComponent implements OnInit {
-  newsDisplayData$ = new BehaviorSubject<QuickLinkCard>(null);
-  @Input() isIccpUser = false;
-  shimmer = false;
-  loadFailure$ = new BehaviorSubject<boolean>(false);
-  constructor(
-    private readonly newsService: NewsService,
-    private readonly winRef: WindowRef,
-    private readonly shimmerService: ShimmerService,
-    private readonly cobrandingService: CobrandingService
-  ) {}
-  isLoading$: Observable<boolean>;
-
-  ngOnInit(): void {
-    this.fetchNewsData();
-  }
-
-  /**
-   * Subscribes to the news service and gets the news response
-   */
-  fetchNewsData() {
-    this.isLoading$ = this.shimmerService.isLoading$();
-    this.newsService.getNews().subscribe({
-      next: (response: News) => {
-        const updatedDescription =
-          response.listGroupSectionRows && response.listGroupSectionRows.length > 0
-            ? 'cardholder.news.viewNews'
-            : 'cardholder.news.noNews';
-        this.newsDisplayData$.next({
-          iconUrl: this.cobrandingService.getCobrandedIconUrl(Dashboard.NEWS_ICON_URL),
-          heading: 'cardholder.news.heading',
-          description: updatedDescription,
-          nextDisplayLink: Dashboard.NEWS_SDNG_PAGE_URL,
-          altText: 'cardholder.news.altText',
-          customClass: 'news-widget'
-        });
-        this.loadFailure$.next(true);
-      },
-      error: error => {
-        console.error('Failed to fetch news data from the service:', error);
-        this.loadFailure$.next(true);
-      }
-    });
-  }
-
-  /**
-   * Redirects to the news legacy page when
-   * arrow button is clicked from news quick link
-   * @param redirectUrl
-   */
-  navigateToNewsPage(redirectUrl: string): void {
-    this.winRef.nativeWindow.location.href = redirectUrl;
-  }
-
-  refresh(): void {
-    this.fetchNewsData();
-  }
-}
-
 
 Here is quick-links-card.component.ts: 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
@@ -512,15 +437,285 @@ quick-links-card.component.html:
 </div>
 </div>
 
-news.component.html:
-<div class="news__container">
-    <app-quick-links-card [quickLinkCardDisplay]="newsDisplayData$ | async"
-    [isIccpUser] ="isIccpUser"
-    [shimmerLoading]="isLoading$ | async"
-    (emitNextDisplayLink) ="navigateToNewsPage($event)"
-    [loadFailure]="loadFailure$ | async"
-    (refresh) ="fetchNewsData()">
-    </app-quick-links-card>
-</div>
+
+
+{
+    "pagedResources": {
+        "links": [
+            {
+                "rel": "self",
+                "href": "/services/reporting-service/jobs?status=COMPLETED"
+            }
+        ],
+        "content": [
+            {
+                "jobId": "lBjGVYvvtNBEPbw6O7YsSGGlEuoI5dbDTghW8SPc-lY=",
+                "name": "TESTREPORT-Rajesh Chandran",
+                "status": "COMPLETED",
+                "userId": null,
+                "reportType": "UDE",
+                "description": null,
+                "size": 511,
+                "fileType": null,
+                "entityName": "Rajya_account Middlename Lastname 50 Char length t",
+                "jobEntityId": "34936604",
+                "jobEntityGuid": null,
+                "jobEntityCd": "A",
+                "triggerId": null,
+                "submittedBy": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                "createdBy": "CH_A1_C1",
+                "legacyJob": false,
+                "nearExpiration": false,
+                "fileGuid": "0FIL164266b746fe9b2ef9f155619e12d10abe32ce154a2a440827aa3184b2ea432e1685133468",
+                "reportFileName": "TESTREPORT-Rajesh_Chandran.tsv",
+                "fileFormat": ".tsv",
+                "nonCardAccountCd": null,
+                "roleOwnerGuid": null,
+                "fromDate": "2023-04-26T05:00:00Z",
+                "toDate": "2023-05-25T05:00:00Z",
+                "nextRunDate": "2023-05-26T20:37:15Z",
+                "lastRunDate": "2023-05-26T20:37:48Z",
+                "queuedDate": "2023-05-26T20:37:45Z",
+                "startDate": "2023-05-26T20:37:47Z",
+                "completedDate": "2023-05-26T20:37:48Z",
+                "createdOnDate": "2023-05-26T20:37:15Z",
+                "lastModifiedDate": "2023-05-26T20:37:49Z",
+                "actualScheduleEndDate": null,
+                "fromDateFormatted": "4.26.2023 00:00:00 UTC",
+                "toDateFormatted": "5.25.2023 00:00:00 UTC",
+                "nextRunDateFormatted": "5.27.2023 05:37:15 JST",
+                "lastRunDateFormatted": "5.27.2023 05:37:48 JST",
+                "queuedDateFormatted": "5.27.2023 05:37:45 JST",
+                "startDateFormatted": "5.27.2023 05:37:47 JST",
+                "completedDateFormatted": "5.27.2023 05:37:48 JST",
+                "createdOnDateFormatted": "5.27.2023 05:37:15 JST",
+                "lastModifiedDateFormatted": "5.27.2023 05:37:49 JST",
+                "actualScheduleEndDateFormatted": null,
+                "rptMigrationEffectiveDate": null,
+                "rptMigrationExpirationDate": null,
+                "rptMigrationEffective": false,
+                "rptMigrationExpired": false,
+                "reportAssigned": true,
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://stage1.commercial.apps.stl.pcfstage00.mastercard.int/reporting-service/lBjGVYvvtNBEPbw6O7YsSGGlEuoI5dbDTghW8SPc-lY="
+                    }
+                ],
+                "blueprint": {
+                    "id": "TlI2UsQGa5djv8eRap96x59YqgEobLW-XlVt1P01W3M=",
+                    "name": "TESTREPORT-Rajesh Chandran",
+                    "description": null,
+                    "blueprintId": "TlI2UsQGa5djv8eRap96x59YqgEobLW-XlVt1P01W3M=",
+                    "entities": [
+                        {
+                            "id": "34936604",
+                            "code": "A",
+                            "name": null,
+                            "entityGuid": null
+                        }
+                    ],
+                    "entityCorpId": "261030",
+                    "corpEntityGuid": null,
+                    "schemeId": null,
+                    "createdByUserId": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                    "updatedByUserId": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                    "frequency": {
+                        "frequencyType": "ONCE",
+                        "offset": 0,
+                        "fromDate": "2023-04-26",
+                        "toDate": "2023-05-25",
+                        "fromDateFormatted": "4.26.2023",
+                        "toDateFormatted": "5.25.2023"
+                    },
+                    "unifiedFrequency": null,
+                    "dateFormat": null,
+                    "dateFormatText": null,
+                    "numberFormat": null,
+                    "numberFormatText": null,
+                    "fileFormat": "TAB_DELIMITED",
+                    "filterByDateType": "POSTING",
+                    "definitionId": "E672401",
+                    "definitionProcedureName": null,
+                    "definitionEngine": "UDE",
+                    "userId": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                    "userLocale": "en_US",
+                    "userCobrand": "mastercard",
+                    "userAccountDisplayDigits": 4,
+                    "userDecimalDisplayDigits": 3,
+                    "userRoleId": "4137746",
+                    "userRoleEntityId": "34936604",
+                    "userRoleEntityType": "A",
+                    "emails": [],
+                    "deliveryOption": "S",
+                    "siteUriText": "https://stage1.sdg2.mastercard.com",
+                    "accountStatuses": [],
+                    "postedCurrencyCodes": [],
+                    "userRoleOwnerGuid": "SROL959C1910B792A54212F75B59E905F88206C6B2DC4AC9917B1B4D9BDD0C89A6D91661984851",
+                    "createdDateTime": "2023-05-26T20:37:15Z",
+                    "updatedDateTime": "2023-05-26T20:37:16Z",
+                    "filters": [],
+                    "financialExport": false,
+                    "includeSplits": false,
+                    "rangePreference": null,
+                    "suppressEmailNotification": false,
+                    "accountType": "N",
+                    "useSingleSupplier": false,
+                    "searchBy": null,
+                    "searchByValue": null,
+                    "reviewStatus": "ALL",
+                    "financialsToInclude": null,
+                    "groupBy": null,
+                    "detailLevel": null,
+                    "oboLevel": "myself",
+                    "initialRunDateTime": "2023-05-26T20:37:15Z",
+                    "lastDownloadDateTime": null,
+                    "ftpEnabled": false,
+                    "wfFormat": null,
+                    "unifiedSchedulingFlag": false,
+                    "webfocusScheduleId": null,
+                    "expenseRptId": null
+                }
+            },
+            {
+                "jobId": "6CX5VRhJBd41EUWwY8I1TNqtqyZ1w_j6e9gbqpePXV0=",
+                "name": "Alex Test Report UDE",
+                "status": "COMPLETED",
+                "userId": null,
+                "reportType": "UDE",
+                "description": null,
+                "size": 4608,
+                "fileType": null,
+                "entityName": "Rajya_account Middlename Lastname 50 Char length t",
+                "jobEntityId": "34936604",
+                "jobEntityGuid": null,
+                "jobEntityCd": "A",
+                "triggerId": null,
+                "submittedBy": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                "createdBy": "CH_A1_C1",
+                "legacyJob": false,
+                "nearExpiration": false,
+                "fileGuid": "0FILb7cde2cd3d371fe089dd09a9861a040dc18f8111570ee22ccf7317650df02bd91685131746",
+                "reportFileName": "Alex_Test_Report_UDE.xls",
+                "fileFormat": ".xls",
+                "nonCardAccountCd": null,
+                "roleOwnerGuid": null,
+                "fromDate": "2023-04-26T05:00:00Z",
+                "toDate": "2023-05-25T05:00:00Z",
+                "nextRunDate": "2023-05-26T20:08:43Z",
+                "lastRunDate": "2023-05-26T20:09:06Z",
+                "queuedDate": "2023-05-26T20:09:04Z",
+                "startDate": "2023-05-26T20:09:05Z",
+                "completedDate": "2023-05-26T20:09:06Z",
+                "createdOnDate": "2023-05-26T20:08:43Z",
+                "lastModifiedDate": "2023-05-26T20:09:07Z",
+                "actualScheduleEndDate": null,
+                "fromDateFormatted": "4.26.2023 00:00:00 UTC",
+                "toDateFormatted": "5.25.2023 00:00:00 UTC",
+                "nextRunDateFormatted": "5.27.2023 05:08:43 JST",
+                "lastRunDateFormatted": "5.27.2023 05:09:06 JST",
+                "queuedDateFormatted": "5.27.2023 05:09:04 JST",
+                "startDateFormatted": "5.27.2023 05:09:05 JST",
+                "completedDateFormatted": "5.27.2023 05:09:06 JST",
+                "createdOnDateFormatted": "5.27.2023 05:08:43 JST",
+                "lastModifiedDateFormatted": "5.27.2023 05:09:07 JST",
+                "actualScheduleEndDateFormatted": null,
+                "rptMigrationEffectiveDate": null,
+                "rptMigrationExpirationDate": null,
+                "rptMigrationEffective": false,
+                "rptMigrationExpired": false,
+                "reportAssigned": true,
+                "links": [
+                    {
+                        "rel": "self",
+                        "href": "https://stage1.commercial.apps.stl.pcfstage00.mastercard.int/reporting-service/6CX5VRhJBd41EUWwY8I1TNqtqyZ1w_j6e9gbqpePXV0="
+                    }
+                ],
+                "blueprint": {
+                    "id": "zeUMLVrk7iZPYFi_7cTJx7wIfUsoJVgVa4MvLnbIegA=",
+                    "name": "Alex Test Report UDE",
+                    "description": null,
+                    "blueprintId": "zeUMLVrk7iZPYFi_7cTJx7wIfUsoJVgVa4MvLnbIegA=",
+                    "entities": [
+                        {
+                            "id": "34936604",
+                            "code": "A",
+                            "name": null,
+                            "entityGuid": null
+                        }
+                    ],
+                    "entityCorpId": "261030",
+                    "corpEntityGuid": null,
+                    "schemeId": null,
+                    "createdByUserId": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                    "updatedByUserId": "SYSTEM",
+                    "frequency": {
+                        "frequencyType": "ONCE",
+                        "offset": 0,
+                        "fromDate": "2023-04-26",
+                        "toDate": "2023-05-25",
+                        "fromDateFormatted": "4.26.2023",
+                        "toDateFormatted": "5.25.2023"
+                    },
+                    "unifiedFrequency": null,
+                    "dateFormat": null,
+                    "dateFormatText": null,
+                    "numberFormat": null,
+                    "numberFormatText": null,
+                    "fileFormat": "EXCEL",
+                    "filterByDateType": "POSTING",
+                    "definitionId": "E58225",
+                    "definitionProcedureName": null,
+                    "definitionEngine": "UDE",
+                    "userId": "232b4975-d853-4d85-b1e9-431a00e90c2c",
+                    "userLocale": "en_US",
+                    "userCobrand": "mastercard",
+                    "userAccountDisplayDigits": 4,
+                    "userDecimalDisplayDigits": 3,
+                    "userRoleId": "4137746",
+                    "userRoleEntityId": "34936604",
+                    "userRoleEntityType": "A",
+                    "emails": [
+                        "LAVANYA.MILTON@MASTERCARD.COM"
+                    ],
+                    "deliveryOption": "S",
+                    "siteUriText": "https://stage1.sdg2.mastercard.com",
+                    "accountStatuses": [],
+                    "postedCurrencyCodes": [],
+                    "userRoleOwnerGuid": "SROL959C1910B792A54212F75B59E905F88206C6B2DC4AC9917B1B4D9BDD0C89A6D91661984851",
+                    "createdDateTime": "2023-05-26T20:08:43Z",
+                    "updatedDateTime": "2023-05-26T20:31:21Z",
+                    "filters": [],
+                    "financialExport": false,
+                    "includeSplits": false,
+                    "rangePreference": null,
+                    "suppressEmailNotification": false,
+                    "accountType": "N",
+                    "useSingleSupplier": false,
+                    "searchBy": null,
+                    "searchByValue": null,
+                    "reviewStatus": "ALL",
+                    "financialsToInclude": null,
+                    "groupBy": null,
+                    "detailLevel": null,
+                    "oboLevel": "myself",
+                    "initialRunDateTime": "2023-05-26T20:08:43Z",
+                    "lastDownloadDateTime": "2023-05-26T20:31:21Z",
+                    "ftpEnabled": false,
+                    "wfFormat": null,
+                    "unifiedSchedulingFlag": false,
+                    "webfocusScheduleId": null,
+                    "expenseRptId": null
+                }
+            }
+        ],
+        "page": {
+            "size": 15,
+            "totalElements": 2,
+            "totalPages": 1,
+            "number": 0
+        }
+    }
+}
 
 
