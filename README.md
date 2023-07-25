@@ -26,3 +26,25 @@ export class NewsMockService {
   }
 }
 for the above changes
+
+
+  private getReports(reqInfo: RequestInfo) {
+    const urlSearchParams = new URLSearchParams(reqInfo.req.url.split('?')[1]);
+    const status = urlSearchParams.get('status');
+
+    if (status === 'COMPLETED' || status === 'SCHEDULED') {
+      const filteredReports = REPORTS.filter(report => report.status === status);
+      return reqInfo.utils.createResponse$(() => ({
+        body: filteredReports,
+        headers: reqInfo.headers,
+        status: STATUS.OK
+      }));
+    } else {
+      // If the status is not specified or invalid, return all reports
+      return reqInfo.utils.createResponse$(() => ({
+        body: REPORTS,
+        headers: reqInfo.headers,
+        status: STATUS.OK
+      }));
+    }
+  }
