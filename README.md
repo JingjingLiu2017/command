@@ -1,50 +1,46 @@
-How should I update report-mock.service.ts: import { RequestInfo, STATUS } from 'angular-in-memory-web-api';
-import { REPORTS } from './reports.stub';
+import { Component, Input, OnInit } from '@angular/core';
+import { Reports } from '@features/services/reports/reports.model';
+import { ReportsService } from '@features/services/reports/reports.service';
+import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
+import { CobrandingService } from '@shared/services/cobranding/cobranding.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-export class NewsMockService {
-  patternCollectionMap = [
-    {
-      pattern: /^\/sdng\/portalservice\/retrieveReportsDataFilesAndStatements.json/,
-      collectionName: 'REPORTS',
-      get: this.getReports.bind(this)
-    }
-  ];
-  private getReports(reqInfo: RequestInfo) {
-    return reqInfo.utils.createResponse$(() => ({
-      body: REPORTS,
-      headers: reqInfo.headers,
-      status: STATUS.OK
-    }));
+@Component({
+  selector: 'app-reports',
+  templateUrl: './reports.component.html',
+  styleUrls: ['./reports.component.scss']
+})
+export class ReportsComponent implements OnInit {
+  reportsDisplayData$ = new BehaviorSubject<QuickLinkCard>(null);
+  @Input() isIccpUser = false;
+  loadFailure$ = new BehaviorSubject<boolean>(false);
+  constructor(
+    private readonly reportsService: ReportsService,
+    private readonly cobrandingService: CobrandingService
+  ) {}
+  isLoading$: Observable<boolean>;
+
+  ngOnInit(): void {
+    this.fetchReportsData();
   }
 
-  private getServiceErrorResponse(reqInfo, errorResponse, status) {
-    return {
-      error: errorResponse,
-      headers: reqInfo.headers,
-      status: status
-    };
+  /**
+   * Subscribes to the Reports service and gets the news response
+   */
+  fetchReportsData(reportType?: string) {
+    this.reportsService.getReports(reportType).subscribe({
+      next: (response: Reports) => {
+        //need add code for reports widget cards
+        this.loadFailure$.next(false);
+      },
+      error: error => {
+        console.error('Failed to fetch reports data from the service:', error);
+        this.loadFailure$.next(true);
+      }
+    });
+  }
+
+  refresh(): void {
+    this.fetchReportsData();
   }
 }
-for the above changes
-
-
-  private getReports(reqInfo: RequestInfo) {
-    const urlSearchParams = new URLSearchParams(reqInfo.req.url.split('?')[1]);
-    const status = urlSearchParams.get('status');
-
-    if (status === 'COMPLETED' || status === 'SCHEDULED') {
-      const filteredReports = REPORTS.filter(report => report.status === status);
-      return reqInfo.utils.createResponse$(() => ({
-        body: filteredReports,
-        headers: reqInfo.headers,
-        status: STATUS.OK
-      }));
-    } else {
-      // If the status is not specified or invalid, return all reports
-      return reqInfo.utils.createResponse$(() => ({
-        body: REPORTS,
-        headers: reqInfo.headers,
-        status: STATUS.OK
-      }));
-    }
-  }
