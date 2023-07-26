@@ -1,46 +1,69 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Reports } from '@features/services/reports/reports.model';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BehaviorSubject, of } from 'rxjs';
+import { ReportsComponent } from './reports.component';
 import { ReportsService } from '@features/services/reports/reports.service';
-import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
 import { CobrandingService } from '@shared/services/cobranding/cobranding.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { QuickLinkCard } from '@shared/components/quick-links-card/quick-link-card.model';
 
-@Component({
-  selector: 'app-reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss']
-})
-export class ReportsComponent implements OnInit {
-  reportsDisplayData$ = new BehaviorSubject<QuickLinkCard>(null);
-  @Input() isIccpUser = false;
-  loadFailure$ = new BehaviorSubject<boolean>(false);
-  constructor(
-    private readonly reportsService: ReportsService,
-    private readonly cobrandingService: CobrandingService
-  ) {}
-  isLoading$: Observable<boolean>;
+describe('ReportsComponent', () => {
+  let component: ReportsComponent;
+  let fixture: ComponentFixture<ReportsComponent>;
+  let reportsService: ReportsService;
 
-  ngOnInit(): void {
-    this.fetchReportsData();
-  }
+  // Mock the ReportsService and CobrandingService
+  const reportsServiceMock = {
+    getReports: jasmine.createSpy('getReports').and.returnValue(of({} as Reports)),
+  };
 
-  /**
-   * Subscribes to the Reports service and gets the news response
-   */
-  fetchReportsData(reportType?: string) {
-    this.reportsService.getReports(reportType).subscribe({
-      next: (response: Reports) => {
-        //need add code for reports widget cards
-        this.loadFailure$.next(false);
-      },
-      error: error => {
-        console.error('Failed to fetch reports data from the service:', error);
-        this.loadFailure$.next(true);
-      }
-    });
-  }
+  const cobrandingServiceMock = {};
 
-  refresh(): void {
-    this.fetchReportsData();
-  }
-}
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ReportsComponent],
+      providers: [
+        { provide: ReportsService, useValue: reportsServiceMock },
+        { provide: CobrandingService, useValue: cobrandingServiceMock },
+      ],
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ReportsComponent);
+    component = fixture.componentInstance;
+    reportsService = TestBed.inject(ReportsService);
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should fetch reports data on initialization', () => {
+    const reportType = 'someType';
+    component.ngOnInit();
+    expect(reportsService.getReports).toHaveBeenCalledWith(reportType);
+  });
+
+  it('should set loadFailure$ to false when reports are fetched successfully', () => {
+    component.fetchReportsData();
+    expect(component.loadFailure$.getValue()).toBeFalse();
+  });
+
+  it('should set loadFailure$ to true when reports fetch fails', () => {
+    const errorMessage = 'Failed to fetch reports data from the service';
+    spyOn(console, 'error');
+    spyOn(component.loadFailure$, 'next');
+
+    reportsServiceMock.getReports.and.throwError(errorMessage);
+
+    component.fetchReportsData();
+    expect(console.error).toHaveBeenCalledWith('Failed to fetch reports data from the service:', errorMessage);
+    expect(component.loadFailure$.next).toHaveBeenCalledWith(true);
+  });
+
+  it('should call fetchReportsData() when refresh() is called', () => {
+    spyOn(component, 'fetchReportsData');
+    component.refresh();
+    expect(component.fetchReportsData).toHaveBeenCalled();
+  });
+});
